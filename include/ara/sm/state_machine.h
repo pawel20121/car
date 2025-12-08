@@ -84,14 +84,15 @@ public:
      * @req [SWS_SM_00649] Update in progress rejection
      * 
      * @param request Transition request value
-     * @return Result<void> Success or error code
+     * @return Result<void, StateManagementErrc> Success or error code
      * 
      * @error kInvalidValue Request not in TransitionRequestTable
      * @error kTransitionNotAllowed Transition not allowed from current state
      * @error kRecoveryTransitionOngoing Error recovery in progress
      * @error kUpdateInProgress Update session in progress
      */
-    ara::core::Result<void> RequestTransition(TransitionRequestType request);
+    ara::core::Result<void, StateManagementErrc> RequestTransition(
+        TransitionRequestType request);  // ← ZMIENIONE!
 
     /**
      * @brief Gets the current state name
@@ -164,10 +165,11 @@ public:
      * @req [SWS_SM_00622] Start with parameter (goes to specified state)
      * @req [SWS_SM_00648] Controller start
      * 
-     * @param targetState Optional target state (nullptr = Initial state)
-     * @return Result<void> Success or error
+     * @param targetState Optional target state (default = Initial state)
+     * @return Result<void, StateManagementErrc> Success or error
      */
-    ara::core::Result<void> Start(State targetState = State::kInitial);
+    ara::core::Result<void, StateManagementErrc> Start(
+        State targetState = State::kInitial);  // ← ZMIENIONE!
 
     /**
      * @brief Stops the state machine
@@ -175,9 +177,9 @@ public:
      * @req [SWS_SM_00614] Stop state machine
      * @req [SWS_SM_00651] Transition to Off state on stop
      * 
-     * @return Result<void> Success or error
+     * @return Result<void, StateManagementErrc> Success or error
      */
-    ara::core::Result<void> Stop();
+    ara::core::Result<void, StateManagementErrc> Stop();  // ← ZMIENIONE!
 
     /**
      * @brief Checks if state machine is running
@@ -199,9 +201,10 @@ private:
      * @brief Transitions to a new state
      * 
      * @param newState Target state
-     * @return Result<void> Success or error
+     * @return Result<void, StateManagementErrc> Success or error
      */
-    ara::core::Result<void> TransitionTo(State newState);
+    ara::core::Result<void, StateManagementErrc> TransitionTo(
+        State newState);  // ← ZMIENIONE!
 
     /**
      * @brief Converts State enum to string
