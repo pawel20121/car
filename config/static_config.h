@@ -9,11 +9,10 @@ namespace sm {
 namespace config {
 
 // ============================================================
-//  ACTION EXECUTOR CONFIGURATION
+// ACTION EXECUTOR CONFIGURATION
 // ============================================================
 
-enum class ActionType : uint32_t
-{
+enum class ActionType : uint32_t {
     kSetFunctionGroupState = 0,
     kStartStateMachine     = 1,
     kStopStateMachine      = 2,
@@ -30,21 +29,47 @@ struct ActionItem
     uint32_t delayMs;
 };
 
+// Mapping state → list
+struct StateActionList {
+    uint8_t state;             // Numeric state ID (NOT enum StateMachine::State)
+    const ActionItem* actions; // Pointer to internal array
+    size_t count;              // Number of actions
+};
+
+// EXTERN declarations for exported action lists
+extern const ActionItem* kInitialActions;
+extern const ActionItem* kRunningActions;
+extern const ActionItem* kOffActions;
+
+extern const size_t kInitialActionsCount;
+extern const size_t kRunningActionsCount;
+extern const size_t kOffActionsCount;
+
+// Table of all available state→action maps
+extern const StateActionList* kActionTable;
+extern const size_t kActionTableCount;
+
+
 // ============================================================
-//  COMMON TYPES FOR TRANSITIONS & RECOVERY
+// COMMON TYPES FOR TRANSITIONS & RECOVERY
 // ============================================================
 
 enum class StateId : uint8_t {
-    kState0 = 0,
-    kState1 = 1,
-    kState2 = 2,
-    kState3 = 3
+    kInitial         = 0,
+    kOff             = 1,
+    kPrepareUpdate   = 2,
+    kVerifyUpdate    = 3,
+    kPrepareRollback = 4,
+    kRunning         = 5,
+    kShutdown        = 6
 };
+
 
 constexpr uint32_t kExecutionErrorAny = 0xFFFFFFFF;
 
+
 // ============================================================
-//  ERROR RECOVERY CONFIGURATION
+// ERROR RECOVERY CONFIGURATION
 // ============================================================
 
 struct ErrorRecoveryRule
@@ -54,54 +79,29 @@ struct ErrorRecoveryRule
     StateId recoveryState;
 };
 
-constexpr ErrorRecoveryRule kControllerErrorRecovery[] = {
-    { StateId::kState0, kExecutionErrorAny, StateId::kState1 },
-    { StateId::kState1, 1,                 StateId::kState2 },
-    { StateId::kState1, kExecutionErrorAny, StateId::kState0 },
-};
+extern const ErrorRecoveryRule* kControllerErrorRecovery;
+extern const size_t kControllerErrorRecoveryCount;
 
-constexpr size_t kControllerErrorRecoveryCount =
-    sizeof(kControllerErrorRecovery) / sizeof(ErrorRecoveryRule);
+extern const ErrorRecoveryRule* kInfotainmentErrorRecovery;
+extern const size_t kInfotainmentErrorRecoveryCount;
 
-constexpr ErrorRecoveryRule kInfotainmentErrorRecovery[] = {
-    { StateId::kState0, kExecutionErrorAny, StateId::kState3 },
-    { StateId::kState3, 5,                 StateId::kState0 }
-};
-
-constexpr size_t kInfotainmentErrorRecoveryCount =
-    sizeof(kInfotainmentErrorRecovery) / sizeof(ErrorRecoveryRule);
 
 // ============================================================
-//  TRANSITION TABLE CONFIGURATION
+// TRANSITION TABLE CONFIGURATION
 // ============================================================
 
 struct TransitionRule
 {
     StateId fromState;
-    uint32_t triggerValue;    // Equivalent to TransitionRequestType
+    uint32_t triggerValue;
     StateId toState;
 };
 
-// Example Controller transitions
-constexpr TransitionRule kControllerTransitions[] = {
-    { StateId::kState0, 1, StateId::kState1 },
-    { StateId::kState1, 2, StateId::kState2 },
-    { StateId::kState2, 3, StateId::kState3 },
-    { StateId::kState3, 4, StateId::kState0 },
-};
+extern const TransitionRule* kControllerTransitions;
+extern const size_t kControllerTransitionsCount;
 
-constexpr size_t kControllerTransitionsCount =
-    sizeof(kControllerTransitions) / sizeof(TransitionRule);
-
-// Example Infotainment transitions
-constexpr TransitionRule kInfotainmentTransitions[] = {
-    { StateId::kState0, 10, StateId::kState1 },
-    { StateId::kState1, 11, StateId::kState2 },
-    { StateId::kState2, 12, StateId::kState3 },
-};
-
-constexpr size_t kInfotainmentTransitionsCount =
-    sizeof(kInfotainmentTransitions) / sizeof(TransitionRule);
+extern const TransitionRule* kInfotainmentTransitions;
+extern const size_t kInfotainmentTransitionsCount;
 
 } // namespace config
 } // namespace sm

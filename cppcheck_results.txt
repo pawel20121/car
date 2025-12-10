@@ -1,0 +1,29 @@
+C:\Users\mozgo\Desktop\car\src\action_executor.cpp:2:0: information: Include file: "ara/sm/action_executor.h" not found. [missingInclude]
+#include "ara/sm/action_executor.h"
+^
+C:\Users\mozgo\Desktop\car\src\action_executor.cpp:5:0: information: Include file: "static_config.h" not found. [missingInclude]
+#include "static_config.h"
+^
+C:\Users\mozgo\Desktop\car\src\error_recovery.cpp:1:0: information: Include file: "ara/sm/error_recovery.h" not found. [missingInclude]
+#include "ara/sm/error_recovery.h"
+^
+C:\Users\mozgo\Desktop\car\src\error_recovery.cpp:2:0: information: Include file: "static_config.h" not found. [missingInclude]
+#include "static_config.h"
+^
+C:\Users\mozgo\Desktop\car\src\state_machine.cpp:2:0: information: Include file: "ara/sm/state_machine.h" not found. [missingInclude]
+#include "ara/sm/state_machine.h"
+^
+C:\Users\mozgo\Desktop\car\src\state_machine.cpp:3:0: information: Include file: "ara/sm/transition_table.h" not found. [missingInclude]
+#include "ara/sm/transition_table.h"
+^
+C:\Users\mozgo\Desktop\car\src\state_machine.cpp:4:0: information: Include file: "static_config.h" not found. [missingInclude]
+#include "static_config.h"
+^
+C:\Users\mozgo\Desktop\car\src\transition_table.cpp:1:0: information: Include file: "ara/sm/transition_table.h" not found. [missingInclude]
+#include "ara/sm/transition_table.h"
+^
+C:\Users\mozgo\Desktop\car\src\transition_table.cpp:2:0: information: Include file: "static_config.h" not found. [missingInclude]
+#include "static_config.h"
+^
+nofile:0:0: information: Active checkers: 181/966 (use --checkers-report=<filename> to see details) [checkersReport]
+
