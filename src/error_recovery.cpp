@@ -1,5 +1,5 @@
-#include "error_recovery.h"
-#include "config/static_config.h"
+#include "ara/sm/error_recovery.h"
+#include "static_config.h"
 #include <iostream>
 
 namespace ara {

@@ -3,7 +3,7 @@
 
 #include "ara/sm/types.h"
 #include "ara/sm/state_machine.h"
-#include "config/static_config.h"
+#include "static_config.h"
 
 namespace ara {
 namespace sm {

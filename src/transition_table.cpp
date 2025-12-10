@@ -1,4 +1,5 @@
-#include "transition_table.h"
+#include "ara/sm/transition_table.h"
+#include "static_config.h"
 #include <iostream>
 
 namespace ara {
