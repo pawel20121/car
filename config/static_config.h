@@ -21,22 +21,19 @@ enum class ActionType : uint32_t {
     kSetNetworkHandle      = 5,
 };
 
-struct ActionItem
-{
+struct ActionItem {
     ActionType type;
     const char* targetName;
     const char* targetState;
     uint32_t delayMs;
 };
 
-// Mapping state → list
 struct StateActionList {
-    uint8_t state;             // Numeric state ID (NOT enum StateMachine::State)
-    const ActionItem* actions; // Pointer to internal array
-    size_t count;              // Number of actions
+    uint8_t state;             
+    const ActionItem* actions; 
+    size_t count;              
 };
 
-// EXTERN declarations for exported action lists
 extern const ActionItem* kInitialActions;
 extern const ActionItem* kRunningActions;
 extern const ActionItem* kOffActions;
@@ -45,7 +42,6 @@ extern const size_t kInitialActionsCount;
 extern const size_t kRunningActionsCount;
 extern const size_t kOffActionsCount;
 
-// Table of all available state→action maps
 extern const StateActionList* kActionTable;
 extern const size_t kActionTableCount;
 
@@ -64,16 +60,9 @@ enum class StateId : uint8_t {
     kShutdown        = 6
 };
 
-
 constexpr uint32_t kExecutionErrorAny = 0xFFFFFFFF;
 
-
-// ============================================================
-// ERROR RECOVERY CONFIGURATION
-// ============================================================
-
-struct ErrorRecoveryRule
-{
+struct ErrorRecoveryRule {
     StateId fromState;
     uint32_t executionError;
     StateId recoveryState;
@@ -90,8 +79,7 @@ extern const size_t kInfotainmentErrorRecoveryCount;
 // TRANSITION TABLE CONFIGURATION
 // ============================================================
 
-struct TransitionRule
-{
+struct TransitionRule {
     StateId fromState;
     uint32_t triggerValue;
     StateId toState;

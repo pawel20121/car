@@ -4,7 +4,8 @@
 #include <cstdint>
 #include <cstddef>
 #include "static_config.h"            // from config/ (added to include dirs)
-#include "state_machine.h"            // for StateMachine::Category
+#include "state_machine.h"
+#include  "types.h"     // for StateMachine::Category
 
 namespace ara {
 namespace sm {
@@ -35,6 +36,18 @@ public:
      * @param errorCode Execution error that occurred
      * @param category StateMachine::Category (Controller/Agent)
      * @return uint8_t recovery state
+class ErrorRecoveryTable {
+public:
+    /**
+     * @brief Get recovery state for error
+     * 
+     * @req [SWS_SM_00601] Error notification reaction
+     * @req [SWS_SM_CONSTR_00014] Handling of non-mapped ExecutionError
+     * 
+     * @param currentState Current StateMachine state
+     * @param errorCode Execution error code
+     * @param category Controller or Agent
+     * @return Recovery state
      */
     static uint8_t GetRecoveryState(
         uint8_t currentState,
