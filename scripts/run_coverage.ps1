@@ -1,43 +1,20 @@
-param(
-    [string]$buildDir = "build"
-)
+# Wymuś generator MinGW Makefiles
+$generator = "MinGW Makefiles"
+$buildDir = "build_coverage"
 
-# Katalog projektu = katalog nadrzędny dla scripts/
-$projectRoot = Split-Path $PSScriptRoot -Parent
+$env:PATH = "C:\msys64\mingw64\bin;$env:PATH"
 
-# Pełna ścieżka build/
-$buildPath = Join-Path $projectRoot $buildDir
-$unitTestsExe = Join-Path $buildPath "tests\unit\unit_tests.exe"
-
-Write-Host "Project root: $projectRoot"
-Write-Host "Build dir:    $buildPath"
-
-if (!(Test-Path $buildPath)) {
-    Write-Error "Build directory not found: $buildPath"
-    exit 1
+if (Test-Path $buildDir) {
+    Remove-Item $buildDir -Recurse -Force
 }
 
-# 1. Build tests
-Write-Host "Building unit tests..."
-cmake --build $buildPath --target unit_tests
+cmake -G $generator -B $buildDir -S . -DCOVERAGE=ON -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
+cmake --build $buildDir --target unit_tests
 
-# 2. Run unit tests
-if (!(Test-Path $unitTestsExe)) {
-    Write-Error "unit_tests.exe not found: $unitTestsExe"
-    exit 1
-}
+ctest --test-dir $buildDir --output-on-failure
 
-Write-Host "Running unit_tests..."
-& $unitTestsExe
+# TYLKO coverage dla Twojego kodu (bez googletest!)
+py -m gcovr -r . --exclude="external" --txt -o coverage_report.txt
+py -m gcovr -r . --exclude="external" --html-details -o coverage_report.html
 
-# 3. Coverage reports
-Write-Host "Generating coverage reports..."
-
-gcovr -r $projectRoot --xml-pretty   -o "$projectRoot\coverage_report.xml"
-gcovr -r $projectRoot --txt          -o "$projectRoot\coverage_report.txt"
-gcovr -r $projectRoot --html-details -o "$projectRoot\coverage_report.html"
-
-Write-Host ""
-Write-Host "Coverage reports generated:"
-Write-Host "  $projectRoot\coverage_report.txt"
-Write-Host "  $projectRoot\coverage_report.html"
+Write-Host "Coverage reports generated: coverage_report.txt, coverage_report.html"

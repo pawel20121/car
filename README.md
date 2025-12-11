@@ -1,105 +1,124 @@
-# AUTOSAR Adaptive Platform State Management Implementation
+# AUTOSAR Adaptive Platform — State Management Module
+Professional Implementation • Unit Testing • Static Analysis • Coverage
 
-## Description
+## 1. Introduction
 
-This project implements the **State Management** module for the **AUTOSAR Adaptive Platform**. The module is responsible for managing the states of the system, including state transitions for both **Machine States** and **Function Group States**. It also handles interactions with other key components of the platform, such as **Update and Configuration Management**, **Network Management**, and **Execution Management**.
+This repository provides a complete implementation of the **State Management** module for the **AUTOSAR Adaptive Platform**. The module manages both the execution lifecycle of Adaptive Applications and Function Group behavior by providing:
 
-The **State Management** module is designed to provide flexible, configurable management of system states, following the AUTOSAR standards for Adaptive Systems. The module includes the implementation of state transitions, action lists for each state, and interfaces for integration with other AUTOSAR services.
+- Machine State Management
+- Function Group State Management
+- Validation and execution of state transitions
+- Action List processing
+- Interfacing with other Adaptive Platform services:
+  - Execution Management
+  - Network Management
+  - Update & Configuration Management
 
+The design follows the guidelines of **AUTOSAR Adaptive Platform SWS State Management** and emphasizes modularity, maintainability, and testability.
 
-incluede in maun directory
+## 2. Key Features
+
+- AUTOSAR-aligned state transition logic
+- Clear separation of API, configuration, and implementation layers
+- Mock-based Action Executor enabling high-quality unit testing
+- Comprehensive unit tests using GoogleTest
+- Automated static analysis:
+  - cppcheck
+  - GCC `-fanalyzer`
+- Coverage reporting using gcov and gcovr
+- CMake-based build system compatible with MinGW/GCC
+
+## 3. Repository Structure
+
+```
+.
+├── config/              # Static configuration for state transitions
+├── external/            # External dependencies (GoogleTest via submodule)
+├── include/             # Public API and module interfaces
+├── scripts/             # Build, analysis, and coverage utility scripts
+├── src/                 # Implementation of the State Management module
+└── tests/               # Unit tests (GoogleTest)
+```
+
+## 4. External Dependencies
+
+This project uses **GoogleTest** as a submodule.
+
+Install or update it:
+
+```bash
 git submodule add https://github.com/google/googletest.git external/googletest
+git submodule update --init --recursive
+```
 
-build
+## 5. Build Instructions (MinGW + CMake)
+
+### 5.1 Configure and build
+
+```powershell
 Remove-Item -Recurse -Force .\build\
 cmake -B build -G "MinGW Makefiles" -DBUILD_TESTS=ON -DCOVERAGE=ON .
 cmake --build build
+```
 
+### 5.2 Running Tests
 
-Możesz teraz uruchomić testy:
-
-.\build\tests\unit\unit_tests.exe
-
-
-lub (zalecane, bo integruje się z CTest):
-
+```powershell
 cd build
 ctest --verbose
+```
 
+## 6. Static Analysis
 
-Skrypt PowerShell (zawiera cppcheck i gcc fanalyzer)
+A script is provided to run static analysis:
+
+Tools:
+- cppcheck
+- GCC `-fanalyzer`
+
+Execute:
+
+```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\run_analysis.ps1
+```
 
+## 7. Code Coverage
 
-Skrypt PowerShell do wykonania coverage i wygenerowania raportów
+Coverage is generated with **gcov** and **gcovr**, with GoogleTest excluded from reports.
+
+Run:
+
+```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\run_coverage.ps1
-powershell -ExecutionPolicy Bypass -File .\scripts\run_coverage_gcov.ps1
+```
 
+Generated reports:
 
-Co masz teraz gotowe:
-Kompletny proces kompilacji (MinGW)
-Integrację z GoogleTest
-Automatyczną rejestrację testów dla CTest
-Działające testy jednostkowe pokrywające:
-przejścia stanów
-niewłaściwe żądania
-recovery po błędzie
-blokadę update
-
-
-
-
-Jeśli chcesz gMock, wykonaj:
-
-cd external
-rm -Recurse -Force googletest
-git clone --branch release-1.12.1 https://github.com/google/googletest.git
-cd ..
-Remove-Item -Recurse -Force build
-cmake -B build -G "MinGW Makefiles" -DBUILD_TESTS=ON -DCOVERAGE=ON .
-cmake --build build
-
-
-
-CMake — dodatkowe targety
-cmake --build build --target cppcheck
-cmake --build build --target coverage
-
-
-
-# AUTOSAR Adaptive — State Management (student project)
-
-## Cel projektu
-Implementacja modułu State Management (Adaptive Platform) na poziomie SWE.3 / SWE.4.
-Zawiera: implementację, testy jednostkowe (GoogleTest), analizę statyczną (cppcheck, GCC -fanalyzer), oraz raport pokrycia (gcovr).
-
-## Użyte specyfikacje
-- AUTOSAR Adaptive Platform R21-11 (użyte elementy SWS State Management)
-
-## Budowanie (Windows + MinGW)
-1. Otwórz PowerShell
-2. `cmake -B build -G "MinGW Makefiles" -DBUILD_TESTS=ON -DCOVERAGE=ON .`
-3. `cmake --build build`
-4. `cd build && ctest --verbose`
-
-## Analiza statyczna
-`powershell .\scripts\run_analysis.ps1`
-
-## Pokrycie (coverage)
-`powershell .\scripts\run_coverage.ps1`
-
-## Testy jednostkowe
-`cd build && ctest --verbose` lub `.\build\tests\unit\unit_tests.exe`
-
-## Raporty
-- `cppcheck_report.txt`
-- `gcc_fanalyzer_report.txt`
 - `coverage_report.txt`
 - `coverage_report.html`
 
+## 8. Project Purpose (Student Project)
 
-gMock vs manual mock — zalecenie
+This implementation was developed as part of a software engineering learning project. The goals included:
 
-Na Twoim GCC 15 rekomenduję manualny mock (który dostarczyłem). Jest prosty, niezawodny i nie zależy od wersji googletest.
+- Understanding AUTOSAR Adaptive Platform architecture
+- Implementing a real subsystem: State Management
+- Developing according to SWE.3 / SWE.4 maturity practices
+- Building a full development toolchain:
+  - modular implementation
+  - unit testing
+  - static analysis
+  - coverage reporting
 
-Jeżeli chcesz gMock, sklonuj googletest w wersji release-1.12.1 i zbuduj ponownie — dostarczę następnie przykładowe testy z użyciem gmock.
+## 9. AUTOSAR Specification Reference
+
+This project references:
+
+- **AUTOSAR Adaptive Platform R21-11**
+  (Selected requirements from *SWS State Management*)
+
+## 10. License
+
+This project is intended for educational and research use.
+For redistribution or commercial use, please contact the author.
+

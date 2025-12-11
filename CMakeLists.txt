@@ -7,18 +7,22 @@ option(COVERAGE "Enable coverage" OFF)
 set(CMAKE_CXX_STANDARD 17)
 
 # =====================================================================
-# COVERAGE FLAGS (MinGW / GCC)
+# COVERAGE FLAGS (GCC / MinGW)
 # =====================================================================
 if(COVERAGE)
-    message(STATUS "Enabling coverage flags (MinGW/GCC)")
+    message(STATUS "Enabling coverage flags (GCC/MinGW)")
 
-    # Wszystkie targety muszą dostać flags
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -g -fprofile-arcs -ftest-coverage")
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -O0 -g -fprofile-arcs -ftest-coverage")
+    set(COVERAGE_COMPILE_FLAGS
+        -O0
+        -g
+        -fprofile-arcs
+        -ftest-coverage
+    )
 
-    # Linkowanie wymagane dla gcov
-    set(CMAKE_EXE_LINKER_FLAGS    "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
+    set(COVERAGE_LINK_FLAGS
+        -fprofile-arcs
+        -ftest-coverage
+    )
 endif()
 
 # =====================================================================
@@ -37,19 +41,23 @@ target_include_directories(ara_sm PUBLIC
     ${CMAKE_SOURCE_DIR}/config
 )
 
+if(COVERAGE)
+    target_compile_options(ara_sm PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(ara_sm    PRIVATE ${COVERAGE_LINK_FLAGS})
+endif()
+
 # =====================================================================
 # GOOGLE TEST
 # =====================================================================
 set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/googletest)
 
-# Wymuszamy coverage także na googletest jeśli COVERAGE=ON
 if(COVERAGE)
-    target_compile_options(gtest PRIVATE -O0 -g -fprofile-arcs -ftest-coverage)
-    target_link_libraries(gtest PRIVATE gcov)
+    target_compile_options(gtest PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(gtest    PRIVATE ${COVERAGE_LINK_FLAGS})
 
-    target_compile_options(gtest_main PRIVATE -O0 -g -fprofile-arcs -ftest-coverage)
-    target_link_libraries(gtest_main PRIVATE gcov)
+    target_compile_options(gtest_main PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(gtest_main    PRIVATE ${COVERAGE_LINK_FLAGS})
 endif()
 
 # =====================================================================
@@ -58,6 +66,11 @@ endif()
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests/unit)
+endif()
+
+if(COVERAGE AND TARGET unit_tests)
+    target_compile_options(unit_tests PRIVATE ${COVERAGE_COMPILE_FLAGS})
+    target_link_options(unit_tests    PRIVATE ${COVERAGE_LINK_FLAGS})
 endif()
 
 # =====================================================================
@@ -78,7 +91,7 @@ if(CPPCHECK_EXECUTABLE)
 endif()
 
 # =====================================================================
-# GCOVR COVERAGE TARGET (działa gdy zainstalowany gcovr)
+# GCOVR COVERAGE TARGET
 # =====================================================================
 find_program(GCOVR_EXECUTABLE NAMES gcovr)
 if(GCOVR_EXECUTABLE)

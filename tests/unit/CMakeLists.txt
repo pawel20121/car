@@ -10,6 +10,5 @@ target_link_libraries(unit_tests
     gtest_main
 )
 
-# Rejestracja testu dla CTest
 enable_testing()
 add_test(NAME unit_tests COMMAND unit_tests)
