@@ -1,0 +1,6 @@
+{
+    "cmake.generator": "MinGW Makefiles",
+    "cmake.buildDirectory": "build",
+    "cmake.configureOnOpen": false,
+    "cmake.preferredGenerators": ["MinGW Makefiles"]
+}
