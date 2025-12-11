@@ -65,4 +65,51 @@ const ErrorRecoveryRule* kControllerErrorRecovery =
     kControllerErrorRecoveryInternal;
 
 const size_t kControllerErrorRecoveryCount =
-    sizeof(kControllerErrorRecoveryInt
+    sizeof(kControllerErrorRecoveryInternal) / sizeof(ErrorRecoveryRule);
+
+
+constexpr ErrorRecoveryRule kInfotainmentErrorRecoveryInternal[] = {
+    { StateId::kInitial, kExecutionErrorAny, StateId::kRunning },
+    { StateId::kRunning, 5,                  StateId::kInitial }
+};
+
+const ErrorRecoveryRule* kInfotainmentErrorRecovery =
+    kInfotainmentErrorRecoveryInternal;
+
+const size_t kInfotainmentErrorRecoveryCount =
+    sizeof(kInfotainmentErrorRecoveryInternal) / sizeof(ErrorRecoveryRule);
+
+
+// ======================================================================
+// TRANSITION TABLES
+// ======================================================================
+
+constexpr TransitionRule kControllerTransitionsInternal[] = {
+    { StateId::kInitial,        1, StateId::kPrepareUpdate },
+    { StateId::kPrepareUpdate,  2, StateId::kVerifyUpdate },
+    { StateId::kVerifyUpdate,   3, StateId::kPrepareRollback },
+    { StateId::kPrepareRollback,4, StateId::kInitial }
+};
+
+const TransitionRule* kControllerTransitions =
+    kControllerTransitionsInternal;
+
+const size_t kControllerTransitionsCount =
+    sizeof(kControllerTransitionsInternal) / sizeof(TransitionRule);
+
+
+constexpr TransitionRule kInfotainmentTransitionsInternal[] = {
+    { StateId::kInitial, 1, StateId::kRunning },
+    { StateId::kRunning, 2, StateId::kOff },
+    { StateId::kOff,     3, StateId::kInitial }
+};
+
+const TransitionRule* kInfotainmentTransitions =
+    kInfotainmentTransitionsInternal;
+
+const size_t kInfotainmentTransitionsCount =
+    sizeof(kInfotainmentTransitionsInternal) / sizeof(TransitionRule);
+
+} // namespace config
+} // namespace sm
+} // namespace ara

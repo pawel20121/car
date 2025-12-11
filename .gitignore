@@ -1,3 +1,10 @@
 /.vscode
 build/*
+build_coverage/*
 doc/*
+/html*
+/latex*
+*.html
+coverage_report.txt
+cppcheck_results.txt
+coverage_report.css
