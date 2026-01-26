@@ -24,6 +24,7 @@ namespace sm {
  * A value which represents the TransitionRequest value to be used in the
  * TransitionRequestTable.
  */
+
 using TransitionRequestType = uint32_t;
 
 /**

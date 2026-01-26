@@ -18,11 +18,13 @@ public:
      * @param category Controller or Agent
      * @return true if transition exists in table
      */
+
     static bool IsTransitionAllowed(
         uint8_t currentState,
         TransitionRequestType request,
         StateMachine::Category category);
 
+        
     /**
      * @brief Get next state for transition
      * 
@@ -31,6 +33,7 @@ public:
      * @param category Controller or Agent
      * @return Next state (or current if not found)
      */
+    
     static uint8_t GetNextState(
         uint8_t currentState,
         TransitionRequestType request,

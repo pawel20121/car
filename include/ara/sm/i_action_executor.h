@@ -17,7 +17,6 @@ public:
 
     // Execute an array of actions (count items)
     virtual void ExecuteActionList(const config::ActionItem* actions, std::size_t count) = 0;
-
     // Execute single action
     virtual void ExecuteAction(const config::ActionItem& action) = 0;
 };
@@ -25,4 +24,6 @@ public:
 } // namespace sm
 } // namespace ara
 
+
 #endif // ARA_SM_I_ACTION_EXECUTOR_H
+
