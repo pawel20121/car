@@ -55,6 +55,16 @@ public:
         StateMachine::Category category);
 };
 
+class ErrorRecoveryTable {
+public:
+    static uint8_t GetRecoveryState(...);
+    
+    // Nowe: obsługa nested recovery
+    static bool IsNestedRecovery(uint8_t currentState, 
+                                 ExecutionErrorType errorCode,
+                                 StateMachine::Category category);
+};
+
 } // namespace sm
 } // namespace ara
 

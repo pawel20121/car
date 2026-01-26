@@ -21,6 +21,9 @@ public:
         kPrepareRollback = 4,
         kRunning = 5,
         kShutdown = 6,
+        kContinueUpdate = 7,    // [SWS_SM_CONSTR_00028]
+        kRestart = 8,           // [SWS_SM_CONSTR_00029]
+        kAfterUpdate = 9,       // [SWS_SM_CONSTR_00027]
         kInTransition = 255
     };
 
@@ -63,6 +66,9 @@ public:
 
     ara::core::Result<void, StateManagementErrc> Start(State targetState = State::kInitial);
     ara::core::Result<void, StateManagementErrc> Stop();
+    ara::core::Result<void, StateManagementErrc> PrepareUpdate(const std::vector<std::string>& functionGroups);
+    ara::core::Result<void, StateManagementErrc> VerifyUpdate(const std::vector<std::string>& functionGroups);
+    ara::core::Result<void, StateManagementErrc> PrepareRollback(const std::vector<std::string>& functionGroups);
 
 private:
     void ExecuteActionList();
