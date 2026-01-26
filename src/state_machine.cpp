@@ -1,7 +1,8 @@
 #include <iostream>
 #include "ara/sm/state_machine.h"
 #include "ara/sm/transition_table.h"
-#include "static_config.h"
+#include "../config/static_config.h"
+#include "ara/sm/static_config.h"
 
 namespace ara {
 namespace sm {
