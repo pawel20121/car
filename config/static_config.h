@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <cstddef>
 #include "types.h"
-#include <cstddef>
 
 /**
  * @file static_config.h
@@ -109,6 +108,15 @@ namespace ExecutionErrors {
     constexpr ExecutionErrorType kVerificationFailed = 11;
 }
 
+/**
+ * @brief Special error code for catch-all rules
+ * @req [SWS_SM_CONSTR_00014]
+ * 
+ * Used in ErrorRecoveryTable to define a default recovery action
+ * for any error not explicitly mapped
+ */
+constexpr ExecutionErrorType kExecutionErrorAny = 0xFFFFFFFF;
+
 // ============================================================================
 // CONFIGURATION STRUCTURES
 // ============================================================================
@@ -194,6 +202,10 @@ extern const size_t kInfotainmentErrorRecoveryCount;
 // Action table
 extern const ActionListEntry kActionTable[];
 extern const size_t kActionTableCount;
+
+// Agent action table (optional, for separate Agent instance)
+extern const ActionListEntry kInfotainmentActionTable[];
+extern const size_t kInfotainmentActionTableCount;
 
 // ============================================================================
 // HELPER FUNCTIONS
