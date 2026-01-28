@@ -33,11 +33,14 @@ add_library(ara_sm
     src/error_recovery.cpp
     src/state_machine.cpp
     src/transition_table.cpp
+    src/update_request_service.cpp
     config/static_config.cpp
 )
 
 target_include_directories(ara_sm PUBLIC 
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/ara/core
+    ${CMAKE_SOURCE_DIR}/include/ara/sm
     ${CMAKE_SOURCE_DIR}/config
 )
 
@@ -51,6 +54,7 @@ endif()
 # =====================================================================
 set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/googletest)
+
 
 if(COVERAGE)
     target_compile_options(gtest PRIVATE ${COVERAGE_COMPILE_FLAGS})
@@ -84,6 +88,8 @@ if(CPPCHECK_EXECUTABLE)
                 --suppress=missingIncludeSystem
                 ${CMAKE_SOURCE_DIR}/src
                 ${CMAKE_SOURCE_DIR}/include
+                ${CMAKE_SOURCE_DIR}/include/ara/core
+                ${CMAKE_SOURCE_DIR}/include/ara/sm
                 ${CMAKE_SOURCE_DIR}/config
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running cppcheck static analysis"

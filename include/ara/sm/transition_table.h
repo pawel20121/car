@@ -1,8 +1,8 @@
 #ifndef ARA_SM_TRANSITION_TABLE_H
 #define ARA_SM_TRANSITION_TABLE_H
 
-#include "ara/sm/types.h"
-#include "ara/sm/state_machine.h"
+#include "types.h"
+#include "state_machine.h"
 #include "static_config.h"
 
 namespace ara {

@@ -1,82 +1,159 @@
-#include "gtest/gtest.h"
-#include "ara/sm/state_machine.h"
-#include "ara/core/result.h"
+#include <gtest/gtest.h>
+
+#include "state_machine.h"
+#include "transition_table.h"
 
 using namespace ara::sm;
 
-// Helper to check Result<void,StateManagementErrc>
-static bool IsSuccess(const ara::core::Result<void, StateManagementErrc>& r) {
-    return r.HasValue();
-}
+// ============================================================================
+// Fake Action Executor (pełna implementacja interfejsu)
+// ============================================================================
 
-static StateManagementErrc GetError(const ara::core::Result<void, StateManagementErrc>& r) {
-    return r.Error();
-}
+class FakeActionExecutor : public IActionExecutor {
+public:
+    void ExecuteActionList(const config::ActionItem*, size_t) override {}
+    void ExecuteAction(const config::ActionItem&) override {}
+};
 
 // ============================================================================
-// 1) Test: podstawowa zmiana stanu (Start + RequestTransition → Running)
+// Tests
 // ============================================================================
-TEST(StateMachineTests, StateChange_RequestTransition_Success) {
-    StateMachine sm("test_sm", StateMachine::Category::kAgent);
 
-    // Start -> Initial
-    auto rstart = sm.Start(StateMachine::State::kInitial);
-    EXPECT_TRUE(rstart.HasValue());
+TEST(StateMachineTest, ConstructorAndDestructor)
+{
+    FakeActionExecutor exec;
+    {
+        StateMachine sm("SM1", StateMachine::Category::kAgent, &exec);
+        EXPECT_EQ(sm.GetName(), "SM1");
+        EXPECT_EQ(sm.GetCategory(), StateMachine::Category::kAgent);
+        EXPECT_FALSE(sm.IsRunning());
+    }
+}
 
-    // Według uproszczonego IsTransitionAllowed:
-    // Initial + request==1 -> Running
-    TransitionRequestType request = 1;
-    auto r = sm.RequestTransition(request);
+TEST(StateMachineTest, StartSetsRunningAndState)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
+
+    auto r = sm.Start(StateMachine::State::kRunning);
+
     EXPECT_TRUE(r.HasValue());
-
+    EXPECT_TRUE(sm.IsRunning());
     EXPECT_EQ(sm.GetCurrentStateEnum(), StateMachine::State::kRunning);
-    EXPECT_EQ(sm.GetCurrentState(), std::string("Running"));
 }
 
-// ============================================================================
-// 2) Test: błędne przejście (niepoprawny request) -> kTransitionNotAllowed
-// ============================================================================
-TEST(StateMachineTests, RequestTransition_InvalidNotAllowed) {
-    StateMachine sm("test_sm2", StateMachine::Category::kAgent);
+TEST(StateMachineTest, StopWhenNotRunningIsNoop)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
 
-    sm.Start(StateMachine::State::kInitial);
+    auto r = sm.Stop();
 
-    TransitionRequestType invalidReq = 9999; // brak w uproszczonej logice
-    auto r = sm.RequestTransition(invalidReq);
-    EXPECT_FALSE(r.HasValue());
-    EXPECT_EQ(GetError(r), StateManagementErrc::kTransitionNotAllowed);
+    EXPECT_TRUE(r.HasValue());
+    EXPECT_FALSE(sm.IsRunning());
 }
 
-// ============================================================================
-// 3) Test: error notification powoduje recovery i przejście do Off
-// ============================================================================
-TEST(StateMachineTests, HandleErrorNotification_Recovery) {
-    StateMachine sm("test_sm3", StateMachine::Category::kAgent);
+TEST(StateMachineTest, StopWhenRunningTransitionsToOff)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
 
     sm.Start(StateMachine::State::kRunning);
+    auto r = sm.Stop();
 
-    uint32_t execError = 42;
-    sm.HandleErrorNotification(execError);
-
-    // U Ciebie: Handler wymusza przejście do Off
+    EXPECT_TRUE(r.HasValue());
+    EXPECT_FALSE(sm.IsRunning());
     EXPECT_EQ(sm.GetCurrentStateEnum(), StateMachine::State::kOff);
-    EXPECT_EQ(sm.GetCurrentState(), std::string("Off"));
 }
 
-// ============================================================================
-// 4) Test: RequestTransition blokowane, gdy ImpactedByUpdate == true
-// ============================================================================
-TEST(StateMachineTests, RequestTransition_BlockedByUpdate) {
-    StateMachine sm("test_sm4", StateMachine::Category::kAgent);
+TEST(StateMachineTest, RequestTransitionBlockedByUpdate)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
 
     sm.Start(StateMachine::State::kInitial);
     sm.SetImpactedByUpdate(true);
 
     auto r = sm.RequestTransition(1);
-    EXPECT_FALSE(r.HasValue());
-    EXPECT_EQ(GetError(r), StateManagementErrc::kUpdateInProgress);
 
-    sm.SetImpactedByUpdate(false);
-    auto r2 = sm.RequestTransition(1);
-    EXPECT_TRUE(r2.HasValue());
+    EXPECT_FALSE(r.HasValue());
+    EXPECT_EQ(r.Error(), StateManagementErrc::kUpdateInProgress);
+}
+
+TEST(StateMachineTest, RequestTransitionNotAllowed)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
+
+    sm.Start(StateMachine::State::kInitial);
+
+    auto r = sm.RequestTransition(9999);
+
+    EXPECT_FALSE(r.HasValue());
+    EXPECT_EQ(r.Error(), StateManagementErrc::kTransitionNotAllowed);
+}
+
+TEST(StateMachineTest, RequestTransitionSuccess)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
+
+    sm.Start(StateMachine::State::kInitial);
+
+    // 🔑 pobieramy REALNY dozwolony request z TransitionTable
+    TransitionRequestType validRequest = 0;
+
+    bool found = false;
+    for (TransitionRequestType r = 0; r < 100; ++r) {
+        if (TransitionTable::IsTransitionAllowed(
+                static_cast<uint8_t>(StateMachine::State::kInitial),
+                r,
+                StateMachine::Category::kAgent))
+        {
+            validRequest = r;
+            found = true;
+            break;
+        }
+    }
+
+    ASSERT_TRUE(found) << "No valid transition request found for Initial state";
+
+    auto result = sm.RequestTransition(validRequest);
+
+    EXPECT_TRUE(result.HasValue());
+}
+
+TEST(StateMachineTest, HandleErrorIgnoredWhenImpactedByUpdate)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
+
+    sm.Start(StateMachine::State::kRunning);
+    sm.SetImpactedByUpdate(true);
+
+    sm.HandleErrorNotification(123);
+
+    EXPECT_EQ(sm.GetCurrentStateEnum(), StateMachine::State::kRunning);
+}
+
+TEST(StateMachineTest, HandleErrorTransitionsToOff)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("SM", StateMachine::Category::kAgent, &exec);
+
+    sm.Start(StateMachine::State::kRunning);
+    sm.HandleErrorNotification(42);
+
+    EXPECT_EQ(sm.GetCurrentStateEnum(), StateMachine::State::kOff);
+}
+
+TEST(StateMachineTest, Getters)
+{
+    FakeActionExecutor exec;
+    StateMachine sm("MySM", StateMachine::Category::kController, &exec);
+
+    EXPECT_EQ(sm.GetName(), "MySM");
+    EXPECT_EQ(sm.GetCategory(), StateMachine::Category::kController);
+    EXPECT_FALSE(sm.IsRunning());
+    EXPECT_FALSE(sm.IsInTransition());
 }

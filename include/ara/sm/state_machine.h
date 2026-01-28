@@ -4,9 +4,9 @@
 #include <string>
 #include <cstdint>
 
-#include "ara/sm/types.h"
-#include "ara/core/result.h"
-#include "ara/sm/i_action_executor.h"
+#include "types.h"
+#include "result.h"
+#include "i_action_executor.h"
 
 namespace ara {
 namespace sm {

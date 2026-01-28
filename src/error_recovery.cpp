@@ -1,4 +1,4 @@
-#include "ara/sm/error_recovery.h"
+#include "error_recovery.h"
 #include "static_config.h"
 #include <iostream>
 
@@ -19,18 +19,18 @@ uint8_t ErrorRecoveryTable::GetRecoveryState(
             
             if (static_cast<uint8_t>(rule.fromState) == currentState) {
                 // Check for exact error match
-                if (rule.executionError == errorCode) {
+                if (rule.errorCode == errorCode) {
                     std::cout << "[ErrorRecovery] Found exact match: state=" 
                               << static_cast<int>(currentState)
                               << " error=" << errorCode
-                              << " -> " << static_cast<int>(rule.recoveryState) 
+                              << " -> " << static_cast<int>(rule.toState) 
                               << std::endl;
-                    return static_cast<uint8_t>(rule.recoveryState);
+                    return static_cast<uint8_t>(rule.toState);
                 }
                 
                 // Remember catch-all (ANY) rule
-                if (rule.executionError == config::kExecutionErrorAny) {
-                    catchAllRecovery = static_cast<uint8_t>(rule.recoveryState);
+                if (rule.errorCode == config::kExecutionErrorAny) {
+                    catchAllRecovery = static_cast<uint8_t>(rule.toState);
                 }
             }
         }
@@ -40,11 +40,11 @@ uint8_t ErrorRecoveryTable::GetRecoveryState(
             const auto& rule = config::kInfotainmentErrorRecovery[i];
             
             if (static_cast<uint8_t>(rule.fromState) == currentState) {
-                if (rule.executionError == errorCode) {
-                    return static_cast<uint8_t>(rule.recoveryState);
+                if (rule.errorCode == errorCode) {
+                    return static_cast<uint8_t>(rule.toState);
                 }
-                if (rule.executionError == config::kExecutionErrorAny) {
-                    catchAllRecovery = static_cast<uint8_t>(rule.recoveryState);
+                if (rule.errorCode == config::kExecutionErrorAny) {
+                    catchAllRecovery = static_cast<uint8_t>(rule.toState);
                 }
             }
         }

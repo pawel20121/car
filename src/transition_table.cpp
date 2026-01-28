@@ -1,4 +1,4 @@
-#include "ara/sm/transition_table.h"
+#include "transition_table.h"
 #include "static_config.h"
 #include <iostream>
 
@@ -15,7 +15,7 @@ bool TransitionTable::IsTransitionAllowed(
         for (size_t i = 0; i < config::kControllerTransitionsCount; i++) {
             const auto& rule = config::kControllerTransitions[i];
             if (static_cast<uint8_t>(rule.fromState) == currentState &&
-                rule.triggerValue == request) {
+                rule.trigger == request) {
                 return true;
             }
         }
@@ -24,7 +24,7 @@ bool TransitionTable::IsTransitionAllowed(
         for (size_t i = 0; i < config::kInfotainmentTransitionsCount; i++) {
             const auto& rule = config::kInfotainmentTransitions[i];
             if (static_cast<uint8_t>(rule.fromState) == currentState &&
-                rule.triggerValue == request) {
+                rule.trigger == request) {
                 return true;
             }
         }
@@ -42,7 +42,7 @@ uint8_t TransitionTable::GetNextState(
         for (size_t i = 0; i < config::kControllerTransitionsCount; i++) {
             const auto& rule = config::kControllerTransitions[i];
             if (static_cast<uint8_t>(rule.fromState) == currentState &&
-                rule.triggerValue == request) {
+                rule.trigger == request) {
                 return static_cast<uint8_t>(rule.toState);
             }
         }
@@ -50,7 +50,7 @@ uint8_t TransitionTable::GetNextState(
         for (size_t i = 0; i < config::kInfotainmentTransitionsCount; i++) {
             const auto& rule = config::kInfotainmentTransitions[i];
             if (static_cast<uint8_t>(rule.fromState) == currentState &&
-                rule.triggerValue == request) {
+                rule.trigger == request) {
                 return static_cast<uint8_t>(rule.toState);
             }
         }

@@ -36,8 +36,6 @@ public:
      * @param errorCode Execution error that occurred
      * @param category StateMachine::Category (Controller/Agent)
      * @return uint8_t recovery state
-class ErrorRecoveryTable {
-public:
     /**
      * @brief Get recovery state for error
      * 
@@ -53,17 +51,22 @@ public:
         uint8_t currentState,
         ExecutionErrorType errorCode,
         StateMachine::Category category);
+        
+    static bool IsNestedRecovery(   
+        uint8_t currentState, 
+        ExecutionErrorType errorCode,
+        StateMachine::Category category);
 };
 
-class ErrorRecoveryTable {
-public:
-    static uint8_t GetRecoveryState(...);
+// class ErrorRecoveryTable {
+// public:
+//     static uint8_t GetRecoveryState(...);
     
-    // Nowe: obsługa nested recovery
-    static bool IsNestedRecovery(uint8_t currentState, 
-                                 ExecutionErrorType errorCode,
-                                 StateMachine::Category category);
-};
+//     // Nowe: obsługa nested recovery
+//     static bool IsNestedRecovery(uint8_t currentState, 
+//                                  ExecutionErrorType errorCode,
+//                                  StateMachine::Category category);
+// };
 
 } // namespace sm
 } // namespace ara
