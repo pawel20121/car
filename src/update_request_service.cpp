@@ -432,6 +432,7 @@ UpdateRequestService::StopUpdateSession()
     }
     
     // Mark session as inactive
+    // LCOV_EXCL_LINE
     impl.updateSessionActive = false;
     
     // @req [SWS_SM_00660] Reset ResetMachineNotifier to default

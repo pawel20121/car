@@ -1,51 +1,143 @@
 #include <gtest/gtest.h>
 
 #include "transition_table.h"
-#include "types.h"
+#include "static_config.h"
 #include "state_machine.h"
 
-using ara::sm::TransitionRequestType;
 using ara::sm::TransitionTable;
+using ara::sm::TransitionRequestType;
 using ara::sm::StateMachine;
 
-/**
- * @brief Unit tests for TransitionTable (AUTOSAR Adaptive compliant)
- */
-class TransitionTableTest : public ::testing::Test
-{
-protected:
-    TransitionTable table;
-};
+using namespace ara::sm::config;
 
-TEST_F(TransitionTableTest, ValidTransitionIsAllowed_Controller)
-{
-    const bool result = table.IsTransitionAllowed(
-        /* currentState */ 0U,
-        /* request */ static_cast<TransitionRequestType>(1U),
-        /* category */ StateMachine::Category::kController
-    );
+// ============================================================================
+// IsTransitionAllowed — Controller FOUND
+// ============================================================================
 
-    EXPECT_TRUE(result);
+TEST(TransitionTableTest, IsTransitionAllowed_Controller_Found)
+{
+    ASSERT_GT(kControllerTransitionsCount, 0U);
+
+    const auto& rule = kControllerTransitions[0];
+
+    const bool allowed = TransitionTable::IsTransitionAllowed(
+        static_cast<uint8_t>(rule.fromState),
+        rule.trigger,
+        StateMachine::Category::kController);
+
+    EXPECT_TRUE(allowed);
 }
 
-TEST_F(TransitionTableTest, InvalidTransitionIsRejected_Controller)
-{
-    const bool result = table.IsTransitionAllowed(
-        /* currentState */ 0U,
-        /* request */ static_cast<TransitionRequestType>(999U),
-        /* category */ StateMachine::Category::kController
-    );
+// ============================================================================
+// IsTransitionAllowed — Controller NOT FOUND
+// ============================================================================
 
-    EXPECT_FALSE(result);
+TEST(TransitionTableTest, IsTransitionAllowed_Controller_NotFound)
+{
+    const bool allowed = TransitionTable::IsTransitionAllowed(
+        0xFF,
+        static_cast<TransitionRequestType>(0xFF),
+        StateMachine::Category::kController);
+
+    EXPECT_FALSE(allowed);
 }
 
-TEST_F(TransitionTableTest, InvalidTransitionIsRejected_Agent)
-{
-    const bool result = table.IsTransitionAllowed(
-        /* currentState */ 0U,
-        /* request */ static_cast<TransitionRequestType>(999U),
-        /* category */ StateMachine::Category::kAgent
-    );
+// ============================================================================
+// IsTransitionAllowed — Agent FOUND
+// ============================================================================
 
-    EXPECT_FALSE(result);
+TEST(TransitionTableTest, IsTransitionAllowed_Agent_Found)
+{
+    ASSERT_GT(kInfotainmentTransitionsCount, 0U);
+
+    const auto& rule = kInfotainmentTransitions[0];
+
+    const bool allowed = TransitionTable::IsTransitionAllowed(
+        static_cast<uint8_t>(rule.fromState),
+        rule.trigger,
+        StateMachine::Category::kAgent);
+
+    EXPECT_TRUE(allowed);
+}
+
+// ============================================================================
+// IsTransitionAllowed — Agent NOT FOUND
+// ============================================================================
+
+TEST(TransitionTableTest, IsTransitionAllowed_Agent_NotFound)
+{
+    const bool allowed = TransitionTable::IsTransitionAllowed(
+        0xEE,
+        static_cast<TransitionRequestType>(0xEE),
+        StateMachine::Category::kAgent);
+
+    EXPECT_FALSE(allowed);
+}
+
+// ============================================================================
+// GetNextState — Controller FOUND
+// ============================================================================
+
+TEST(TransitionTableTest, GetNextState_Controller_Found)
+{
+    ASSERT_GT(kControllerTransitionsCount, 0U);
+
+    const auto& rule = kControllerTransitions[0];
+
+    const uint8_t next = TransitionTable::GetNextState(
+        static_cast<uint8_t>(rule.fromState),
+        rule.trigger,
+        StateMachine::Category::kController);
+
+    EXPECT_EQ(next, static_cast<uint8_t>(rule.toState));
+}
+
+// ============================================================================
+// GetNextState — Agent FOUND
+// ============================================================================
+
+TEST(TransitionTableTest, GetNextState_Agent_Found)
+{
+    ASSERT_GT(kInfotainmentTransitionsCount, 0U);
+
+    const auto& rule = kInfotainmentTransitions[0];
+
+    const uint8_t next = TransitionTable::GetNextState(
+        static_cast<uint8_t>(rule.fromState),
+        rule.trigger,
+        StateMachine::Category::kAgent);
+
+    EXPECT_EQ(next, static_cast<uint8_t>(rule.toState));
+}
+
+// ============================================================================
+// GetNextState — Controller NOT FOUND → cerr + return currentState
+// ============================================================================
+
+TEST(TransitionTableTest, GetNextState_Controller_NotFound_ReturnsCurrent)
+{
+    const uint8_t current = 0xAA;
+
+    const uint8_t next = TransitionTable::GetNextState(
+        current,
+        static_cast<TransitionRequestType>(0xAA),
+        StateMachine::Category::kController);
+
+    EXPECT_EQ(next, current);
+}
+
+// ============================================================================
+// GetNextState — Agent NOT FOUND → cerr + return currentState
+// ============================================================================
+
+TEST(TransitionTableTest, GetNextState_Agent_NotFound_ReturnsCurrent)
+{
+    const uint8_t current = 0xBB;
+
+    const uint8_t next = TransitionTable::GetNextState(
+        current,
+        static_cast<TransitionRequestType>(0xBB),
+        StateMachine::Category::kAgent);
+
+    EXPECT_EQ(next, current);
 }
