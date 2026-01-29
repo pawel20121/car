@@ -5,7 +5,9 @@ add_executable(unit_tests
     test_transition_table.cpp
     test_error_recovery.cpp
     test_update_request_service.cpp
+    test_static_config.cpp
     test_action_executor.cpp
+    
 )
 
 

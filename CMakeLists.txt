@@ -35,6 +35,7 @@ add_library(ara_sm
     src/transition_table.cpp
     src/update_request_service.cpp
     config/static_config.cpp
+    config/static_config_helpers.cpp
 )
 
 target_include_directories(ara_sm PUBLIC 
