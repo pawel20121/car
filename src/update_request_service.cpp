@@ -371,8 +371,8 @@ void UpdateRequestService::ResetMachine()
         }
         
         // @req [SWS_SM_00662] Successful
-        std::cout << "[UpdateRequestService] Machine restart initiated" << std::endl;
-        impl.resetMachineStatus = UpdateStatusType::kSuccessful;
+        // std::cout << "[UpdateRequestService] Machine restart initiated" << std::endl;
+        // impl.resetMachineStatus = UpdateStatusType::kSuccessful;
         
         // Note: After this point, machine will reboot
         // Upon restart, StateMachine will enter ContinueUpdate state
@@ -426,9 +426,7 @@ UpdateRequestService::StopUpdateSession()
         }
         
         // @req [SWS_SM_00656] Unmark "ImpactedByUpdate"
-        impl.controllerSM->SetImpactedByUpdate(false);
-        
-        // TODO: Unmark all Agent StateMachines
+        // impl.controllerSM->SetImpactedByUpdate(false);
     }
     
     // Mark session as inactive

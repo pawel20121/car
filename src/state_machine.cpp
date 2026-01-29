@@ -204,7 +204,7 @@ ara::core::Result<void, StateManagementErrc>
 StateMachine::TransitionTo(State newState)
 {
     std::cout << "[SM] Transition: "
-              << StateToString(currentState_)
+            //   << StateToString(currentState_)
               << " -> " << StateToString(newState) << std::endl;
 
     isInTransition_ = true;
