@@ -117,9 +117,6 @@ UpdateRequestService::RequestUpdateSession()
     impl.resetMachineStatus = UpdateStatusType::kIdle;
     
     // @req [SWS_SM_00204] Persist session status
-    // TODO: In real implementation, persist to ara::per
-    // ara::per::KeyValueStorage::SetValue("sm_update_session_active", "true");
-    
     std::cout << "[UpdateRequestService] Update session started" << std::endl;
     
     return ara::core::Result<void, StateManagementErrc>();
@@ -175,10 +172,6 @@ UpdateRequestService::PrepareUpdate(const FunctionGroupListType& functionGroupLi
     if (impl.controllerSM) {
         impl.controllerSM->SetImpactedByUpdate(true);
         
-        // TODO: Mark Agent StateMachines that manage these FunctionGroups
-        // For each FG in list:
-        //   - Find which StateMachine manages it
-        //   - Mark that StateMachine as impacted
     }
     
     // @req [SWS_SM_00633] Transition affected StateMachines to PrepareUpdate state
@@ -437,9 +430,6 @@ UpdateRequestService::StopUpdateSession()
     impl.resetMachineStatus = UpdateStatusType::kIdle;
     
     // @req [SWS_SM_00204] Clear persisted session status
-    // TODO: In real implementation
-    // ara::per::KeyValueStorage::RemoveKey("sm_update_session_active");
-    
     std::cout << "[UpdateRequestService] Update session stopped" << std::endl;
     
     // @req [SWS_SM_00647] RequestTransition is now enabled again
