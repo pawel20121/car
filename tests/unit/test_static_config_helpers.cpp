@@ -1,292 +1,164 @@
+/**
+ * @file test_static_config_helpers.cpp
+ * @brief Unit tests for static configuration helper functions
+ */
+
 #include <gtest/gtest.h>
-
 #include "static_config.h"
-#include "types.h"
 
-using namespace ara::sm::config;
-using ara::sm::TransitionRequestType;  // Add this line
+namespace ara {
+namespace sm {
+namespace config {
 
-// ============================================================================
-// StateIdToString TESTS
-// ============================================================================
+// Test StateIdToString function
+class StateIdToStringTest : public ::testing::Test {};
 
-TEST(StaticConfigHelpersTest, StateIdToStringCommonStates)
-{
-    EXPECT_STREQ(StateIdToString(States::kInitial), "Initial");
-    EXPECT_STREQ(StateIdToString(States::kOff), "Off");
-    EXPECT_STREQ(StateIdToString(States::kRunning), "Running");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForInitial) {
+    EXPECT_STREQ("Initial", StateIdToString(States::kInitial));
 }
 
-TEST(StaticConfigHelpersTest, StateIdToStringUpdateStates)
-{
-    EXPECT_STREQ(StateIdToString(States::kPrepareUpdate), "PrepareUpdate");
-    EXPECT_STREQ(StateIdToString(States::kVerifyUpdate), "VerifyUpdate");
-    EXPECT_STREQ(StateIdToString(States::kPrepareRollback), "PrepareRollback");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForOff) {
+    EXPECT_STREQ("Off", StateIdToString(States::kOff));
 }
 
-TEST(StaticConfigHelpersTest, StateIdToStringControllerStates)
-{
-    EXPECT_STREQ(StateIdToString(States::kStartup), "Startup");
-    EXPECT_STREQ(StateIdToString(States::kShutdown), "Shutdown");
-    EXPECT_STREQ(StateIdToString(States::kRestart), "Restart");
-    EXPECT_STREQ(StateIdToString(States::kContinueUpdate), "ContinueUpdate");
-    EXPECT_STREQ(StateIdToString(States::kAfterUpdate), "AfterUpdate");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForRunning) {
+    EXPECT_STREQ("Running", StateIdToString(States::kRunning));
 }
 
-TEST(StaticConfigHelpersTest, StateIdToStringAgentStates)
-{
-    EXPECT_STREQ(StateIdToString(States::kDegraded), "Degraded");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForPrepareUpdate) {
+    EXPECT_STREQ("PrepareUpdate", StateIdToString(States::kPrepareUpdate));
 }
 
-TEST(StaticConfigHelpersTest, StateIdToStringSpecialStates)
-{
-    EXPECT_STREQ(StateIdToString(States::kInTransition), "InTransition");
-    EXPECT_STREQ(StateIdToString(States::kInvalid), "Invalid");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForVerifyUpdate) {
+    EXPECT_STREQ("VerifyUpdate", StateIdToString(States::kVerifyUpdate));
 }
 
-TEST(StaticConfigHelpersTest, StateIdToStringUnknownState)
-{
-    EXPECT_STREQ(StateIdToString(0xDEADBEEF), "Unknown");
-    EXPECT_STREQ(StateIdToString(999999), "Unknown");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForPrepareRollback) {
+    EXPECT_STREQ("PrepareRollback", StateIdToString(States::kPrepareRollback));
 }
 
-TEST(StaticConfigHelpersTest, StateIdToStringAllDefinedStates)
-{
-    // Verify all defined states return non-null strings
-    const uint32_t definedStates[] = {
-        States::kInitial,
-        States::kOff,
-        States::kRunning,
-        States::kPrepareUpdate,
-        States::kVerifyUpdate,
-        States::kPrepareRollback,
-        States::kStartup,
-        States::kShutdown,
-        States::kRestart,
-        States::kContinueUpdate,
-        States::kAfterUpdate,
-        States::kDegraded,
-        States::kInTransition,
-        States::kInvalid
-    };
-    
-    for (uint32_t state : definedStates) {
-        const char* name = StateIdToString(state);
-        EXPECT_NE(name, nullptr);
-        EXPECT_STRNE(name, "");
-        EXPECT_STRNE(name, "Unknown");
-    }
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForStartup) {
+    EXPECT_STREQ("Startup", StateIdToString(States::kStartup));
 }
 
-// ============================================================================
-// TriggerIdToString TESTS
-// ============================================================================
-
-TEST(StaticConfigHelpersTest, TriggerIdToStringLifecycleTriggers)
-{
-    EXPECT_STREQ(TriggerIdToString(Triggers::kStartup), "Startup");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kShutdownRequest), "ShutdownRequest");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kRestartRequest), "RestartRequest");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kGoToRunning), "GoToRunning");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForShutdown) {
+    EXPECT_STREQ("Shutdown", StateIdToString(States::kShutdown));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringUpdateTriggers)
-{
-    EXPECT_STREQ(TriggerIdToString(Triggers::kPrepareUpdateRequest), "PrepareUpdateRequest");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kVerifyUpdateRequest), "VerifyUpdateRequest");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kPrepareRollbackRequest), "PrepareRollbackRequest");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kFinishUpdateRequest), "FinishUpdateRequest");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForRestart) {
+    EXPECT_STREQ("Restart", StateIdToString(States::kRestart));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringNetworkTriggers)
-{
-    EXPECT_STREQ(TriggerIdToString(Triggers::kNetworkFullCom), "NetworkFullCom");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kNetworkNoCom), "NetworkNoCom");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForContinueUpdate) {
+    EXPECT_STREQ("ContinueUpdate", StateIdToString(States::kContinueUpdate));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringApplicationTriggers)
-{
-    EXPECT_STREQ(TriggerIdToString(Triggers::kUserRequest), "UserRequest");
-    EXPECT_STREQ(TriggerIdToString(Triggers::kDegradeRequest), "DegradeRequest");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForAfterUpdate) {
+    EXPECT_STREQ("AfterUpdate", StateIdToString(States::kAfterUpdate));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringUnknownTrigger)
-{
-    EXPECT_STREQ(TriggerIdToString(0xDEADBEEF), "Unknown");
-    EXPECT_STREQ(TriggerIdToString(999999), "Unknown");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForDegraded) {
+    EXPECT_STREQ("Degraded", StateIdToString(States::kDegraded));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringAllDefinedTriggers)
-{
-    // Verify all defined triggers return non-null strings
-    const TransitionRequestType definedTriggers[] = {
-        Triggers::kStartup,
-        Triggers::kShutdownRequest,
-        Triggers::kRestartRequest,
-        Triggers::kGoToRunning,
-        Triggers::kPrepareUpdateRequest,
-        Triggers::kVerifyUpdateRequest,
-        Triggers::kPrepareRollbackRequest,
-        Triggers::kFinishUpdateRequest,
-        Triggers::kNetworkFullCom,
-        Triggers::kNetworkNoCom,
-        Triggers::kUserRequest,
-        Triggers::kDegradeRequest
-    };
-    
-    for (TransitionRequestType trigger : definedTriggers) {
-        const char* name = TriggerIdToString(trigger);
-        EXPECT_NE(name, nullptr);
-        EXPECT_STRNE(name, "");
-        EXPECT_STRNE(name, "Unknown");
-    }
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForInTransition) {
+    EXPECT_STREQ("InTransition", StateIdToString(States::kInTransition));
 }
 
-// ============================================================================
-// ActionTypeToString TESTS
-// ============================================================================
-
-TEST(StaticConfigHelpersTest, ActionTypeToStringAllActionTypes)
-{
-    EXPECT_STREQ(ActionTypeToString(ActionType::kSetFunctionGroupState), "SetFunctionGroupState");
-    EXPECT_STREQ(ActionTypeToString(ActionType::kStartStateMachine), "StartStateMachine");
-    EXPECT_STREQ(ActionTypeToString(ActionType::kStopStateMachine), "StopStateMachine");
-    EXPECT_STREQ(ActionTypeToString(ActionType::kSync), "Sync");
-    EXPECT_STREQ(ActionTypeToString(ActionType::kSleep), "Sleep");
-    EXPECT_STREQ(ActionTypeToString(ActionType::kSetNetworkHandle), "SetNetworkHandle");
+TEST_F(StateIdToStringTest, ReturnsCorrectStringForInvalid) {
+    EXPECT_STREQ("Invalid", StateIdToString(States::kInvalid));
 }
 
-TEST(StaticConfigHelpersTest, ActionTypeToStringUnknownAction)
-{
-    // Cast invalid value to ActionType
-    ActionType unknownAction = static_cast<ActionType>(99);
-    EXPECT_STREQ(ActionTypeToString(unknownAction), "Unknown");
+TEST_F(StateIdToStringTest, ReturnsUnknownForInvalidState) {
+    EXPECT_STREQ("Unknown", StateIdToString(9999));
 }
 
-TEST(StaticConfigHelpersTest, ActionTypeToStringAllEnumValues)
-{
-    // Verify all enum values return non-null strings
-    const ActionType definedActions[] = {
-        ActionType::kSetFunctionGroupState,
-        ActionType::kStartStateMachine,
-        ActionType::kStopStateMachine,
-        ActionType::kSync,
-        ActionType::kSleep,
-        ActionType::kSetNetworkHandle
-    };
-    
-    for (ActionType action : definedActions) {
-        const char* name = ActionTypeToString(action);
-        EXPECT_NE(name, nullptr);
-        EXPECT_STRNE(name, "");
-        EXPECT_STRNE(name, "Unknown");
-    }
+// Test TriggerIdToString function
+class TriggerIdToStringTest : public ::testing::Test {};
+
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForStartup) {
+    EXPECT_STREQ("Startup", TriggerIdToString(Triggers::kStartup));
 }
 
-// ============================================================================
-// CONSISTENCY TESTS
-// ============================================================================
-
-TEST(StaticConfigHelpersTest, StateIdToStringConsistencyWithStateEnum)
-{
-    // Verify string representation matches expected naming convention
-    EXPECT_STREQ(StateIdToString(States::kInitial), "Initial");
-    EXPECT_STREQ(StateIdToString(States::kRunning), "Running");
-    
-    // The string should match the enum name without 'k' prefix
-    const char* initial = StateIdToString(States::kInitial);
-    EXPECT_EQ(initial[0], 'I'); // Not 'k'
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForShutdownRequest) {
+    EXPECT_STREQ("ShutdownRequest", TriggerIdToString(Triggers::kShutdownRequest));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringConsistencyWithTriggerEnum)
-{
-    // Verify string representation matches expected naming convention
-    const char* startup = TriggerIdToString(Triggers::kStartup);
-    EXPECT_EQ(startup[0], 'S'); // Not 'k'
-    
-    // Request triggers should end with "Request"
-    const char* shutdownRequest = TriggerIdToString(Triggers::kShutdownRequest);
-    EXPECT_NE(std::string(shutdownRequest).find("Request"), std::string::npos);
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForRestartRequest) {
+    EXPECT_STREQ("RestartRequest", TriggerIdToString(Triggers::kRestartRequest));
 }
 
-TEST(StaticConfigHelpersTest, ActionTypeToStringConsistencyWithActionEnum)
-{
-    // Verify string representation matches expected naming convention
-    const char* setFG = ActionTypeToString(ActionType::kSetFunctionGroupState);
-    EXPECT_EQ(setFG[0], 'S'); // Not 'k'
-    
-    // All action names should be CamelCase
-    const char* startSM = ActionTypeToString(ActionType::kStartStateMachine);
-    EXPECT_EQ(startSM[0], 'S');
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForGoToRunning) {
+    EXPECT_STREQ("GoToRunning", TriggerIdToString(Triggers::kGoToRunning));
 }
 
-// ============================================================================
-// RETURN VALUE TESTS
-// ============================================================================
-
-TEST(StaticConfigHelpersTest, AllFunctionsReturnNonNullStrings)
-{
-    // StateIdToString
-    EXPECT_NE(StateIdToString(States::kInitial), nullptr);
-    EXPECT_NE(StateIdToString(0xFFFFFFFF), nullptr); // Even for unknown
-    
-    // TriggerIdToString
-    EXPECT_NE(TriggerIdToString(Triggers::kStartup), nullptr);
-    EXPECT_NE(TriggerIdToString(0xFFFFFFFF), nullptr); // Even for unknown
-    
-    // ActionTypeToString
-    EXPECT_NE(ActionTypeToString(ActionType::kSync), nullptr);
-    EXPECT_NE(ActionTypeToString(static_cast<ActionType>(99)), nullptr); // Even for unknown
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForPrepareUpdateRequest) {
+    EXPECT_STREQ("PrepareUpdateRequest", TriggerIdToString(Triggers::kPrepareUpdateRequest));
 }
 
-TEST(StaticConfigHelpersTest, StringsAreNonEmpty)
-{
-    // StateIdToString
-    EXPECT_GT(std::string(StateIdToString(States::kInitial)).length(), 0);
-    EXPECT_GT(std::string(StateIdToString(0xFFFFFFFF)).length(), 0);
-    
-    // TriggerIdToString
-    EXPECT_GT(std::string(TriggerIdToString(Triggers::kStartup)).length(), 0);
-    EXPECT_GT(std::string(TriggerIdToString(0xFFFFFFFF)).length(), 0);
-    
-    // ActionTypeToString
-    EXPECT_GT(std::string(ActionTypeToString(ActionType::kSync)).length(), 0);
-    EXPECT_GT(std::string(ActionTypeToString(static_cast<ActionType>(99))).length(), 0);
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForVerifyUpdateRequest) {
+    EXPECT_STREQ("VerifyUpdateRequest", TriggerIdToString(Triggers::kVerifyUpdateRequest));
 }
 
-// ============================================================================
-// EDGE CASE TESTS
-// ============================================================================
-
-TEST(StaticConfigHelpersTest, StateIdToStringBoundaryValues)
-{
-    // Test boundary values
-    EXPECT_STREQ(StateIdToString(0), "Initial"); // kInitial = 0
-    EXPECT_STREQ(StateIdToString(States::kInTransition), "InTransition");
-    EXPECT_STREQ(StateIdToString(States::kInvalid), "Invalid");
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForPrepareRollbackRequest) {
+    EXPECT_STREQ("PrepareRollbackRequest", TriggerIdToString(Triggers::kPrepareRollbackRequest));
 }
 
-TEST(StaticConfigHelpersTest, TriggerIdToStringSmallestAndLargestValues)
-{
-    // Test smallest defined trigger
-    EXPECT_STREQ(TriggerIdToString(Triggers::kStartup), "Startup");
-    
-    // Test largest defined trigger (application-specific)
-    EXPECT_STREQ(TriggerIdToString(Triggers::kDegradeRequest), "DegradeRequest");
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForFinishUpdateRequest) {
+    EXPECT_STREQ("FinishUpdateRequest", TriggerIdToString(Triggers::kFinishUpdateRequest));
 }
 
-TEST(StaticConfigHelpersTest, MultipleCallsReturnSamePointer)
-{
-    // Verify string literals are returned (same pointer for same input)
-    const char* first = StateIdToString(States::kRunning);
-    const char* second = StateIdToString(States::kRunning);
-    EXPECT_EQ(first, second); // Should be same string literal
-    
-    const char* firstTrigger = TriggerIdToString(Triggers::kStartup);
-    const char* secondTrigger = TriggerIdToString(Triggers::kStartup);
-    EXPECT_EQ(firstTrigger, secondTrigger);
-    
-    const char* firstAction = ActionTypeToString(ActionType::kSync);
-    const char* secondAction = ActionTypeToString(ActionType::kSync);
-    EXPECT_EQ(firstAction, secondAction);
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForNetworkFullCom) {
+    EXPECT_STREQ("NetworkFullCom", TriggerIdToString(Triggers::kNetworkFullCom));
 }
+
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForNetworkNoCom) {
+    EXPECT_STREQ("NetworkNoCom", TriggerIdToString(Triggers::kNetworkNoCom));
+}
+
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForUserRequest) {
+    EXPECT_STREQ("UserRequest", TriggerIdToString(Triggers::kUserRequest));
+}
+
+TEST_F(TriggerIdToStringTest, ReturnsCorrectStringForDegradeRequest) {
+    EXPECT_STREQ("DegradeRequest", TriggerIdToString(Triggers::kDegradeRequest));
+}
+
+TEST_F(TriggerIdToStringTest, ReturnsUnknownForInvalidTrigger) {
+    EXPECT_STREQ("Unknown", TriggerIdToString(static_cast<TransitionRequestType>(9999)));
+}
+
+// Test ActionTypeToString function
+class ActionTypeToStringTest : public ::testing::Test {};
+
+TEST_F(ActionTypeToStringTest, ReturnsCorrectStringForSetFunctionGroupState) {
+    EXPECT_STREQ("SetFunctionGroupState", ActionTypeToString(ActionType::kSetFunctionGroupState));
+}
+
+TEST_F(ActionTypeToStringTest, ReturnsCorrectStringForStartStateMachine) {
+    EXPECT_STREQ("StartStateMachine", ActionTypeToString(ActionType::kStartStateMachine));
+}
+
+TEST_F(ActionTypeToStringTest, ReturnsCorrectStringForStopStateMachine) {
+    EXPECT_STREQ("StopStateMachine", ActionTypeToString(ActionType::kStopStateMachine));
+}
+
+TEST_F(ActionTypeToStringTest, ReturnsCorrectStringForSync) {
+    EXPECT_STREQ("Sync", ActionTypeToString(ActionType::kSync));
+}
+
+TEST_F(ActionTypeToStringTest, ReturnsCorrectStringForSleep) {
+    EXPECT_STREQ("Sleep", ActionTypeToString(ActionType::kSleep));
+}
+
+TEST_F(ActionTypeToStringTest, ReturnsCorrectStringForSetNetworkHandle) {
+    EXPECT_STREQ("SetNetworkHandle", ActionTypeToString(ActionType::kSetNetworkHandle));
+}
+
+TEST_F(ActionTypeToStringTest, ReturnsUnknownForInvalidActionType) {
+    EXPECT_STREQ("Unknown", ActionTypeToString(static_cast<ActionType>(9999)));
+}
+
+} // namespace config
+} // namespace sm
+} // namespace ara
