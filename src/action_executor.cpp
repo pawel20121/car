@@ -115,13 +115,7 @@ void ActionExecutor::ExecuteSetFunctionGroupState(
     std::cout << "  [Action] SetFunctionGroupState: " 
               << fgName << " -> " << stateName << std::endl;
     
-    // TODO: Call Execution Management API
-    // Example:
-    // auto fg = ara::exec::FunctionGroup::Create(fgName);
-    // if (fg.HasValue()) {
-    //     auto state = ara::exec::FunctionGroupState::Create(stateName);
-    //     fg.Value().SetState(state);
-    // }
+
 }
 
 /**
@@ -178,14 +172,7 @@ void ActionExecutor::ExecuteStopStateMachine(const char* smName)
     
     std::cout << "  [Action] StopStateMachine: " << smName << std::endl;
     
-    // TODO: Stop the referenced StateMachine
-    // Per [SWS_SM_00651], StateMachine should transition to Off first
-    // Example:
-    // auto agentSM = StateMachine::Find(smName);
-    // if (agentSM.HasValue()) {
-    //     agentSM.Value().Stop(); // This transitions to Off then stops
-    // }
-}
+    
 
 /**
  * @brief Synchronization point - wait for previous actions
@@ -199,15 +186,6 @@ void ActionExecutor::ExecuteSync()
 {
     std::cout << "  [Action] SYNC - waiting for previous actions to complete..." 
               << std::endl;
-    
-    // TODO: Wait for all previous async actions to complete
-    // In a real implementation:
-    // - Track all pending Future<> objects from async operations
-    // - Wait for all of them to complete
-    // - Check their results and handle errors
-    //
-    // For now, all actions are synchronous, so this is a no-op
-    // but serves as a placeholder for proper async implementation
     
     std::cout << "  [Action] SYNC - completed" << std::endl;
 }
@@ -253,18 +231,6 @@ void ActionExecutor::ExecuteSetNetworkHandle(
     std::cout << "  [Action] SetNetworkHandle: " 
               << handleName << " -> " << state << std::endl;
     
-    // TODO: Call Network Management API
-    // Example:
-    // auto nmHandle = ara::nm::NetworkHandle::Find(handleName);
-    // if (nmHandle.HasValue()) {
-    //     if (std::string(state) == "FullCom") {
-    //         nmHandle.Value().SetNetworkRequestedState(
-    //             ara::nm::NmStateRequestEnum::kFullCom);
-    //     } else if (std::string(state) == "NoCom") {
-    //         nmHandle.Value().SetNetworkRequestedState(
-    //             ara::nm::NmStateRequestEnum::kNoCom);
-    //     }
-    // }
 }
 
 } // namespace sm
